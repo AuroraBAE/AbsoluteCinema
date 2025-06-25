@@ -29,7 +29,7 @@ const Navbar = () => {
           <img src={Logo} alt="Cinema Logo" className="h-10 w-auto" />
           <ul className="flex space-x-6 font-bold uppercase">
             <NavItem to="/" location={location}>Home</NavItem>
-            <NavItem to="/Genres" location={location}>Genres</NavItem>
+            <NavItem to="/genres" location={location}>Genres</NavItem>
             <NavItem to="/trending" location={location}>Trending</NavItem>
           </ul>
         </div>
