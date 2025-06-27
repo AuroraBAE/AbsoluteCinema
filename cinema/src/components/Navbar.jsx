@@ -31,6 +31,7 @@ const Navbar = () => {
             <NavItem to="/" location={location}>Home</NavItem>
             <NavItem to="/genres" location={location}>Genres</NavItem>
             <NavItem to="/trending" location={location}>Trending</NavItem>
+            <NavItem to="/watchlist" location={location}>WatchList</NavItem>
           </ul>
         </div>
 
