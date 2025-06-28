@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { getMovies, getTopRatedMovies, getGenreMovies } from "../backend/movie";
 import { renderSlider } from "../components/slider";
 import WatchlistModal from "../components/Watchlistmodal";
+import LoadingScreen from "../components/LoadingScreen";
+
 
 const platformLinks = {
   "Netflix": "https://www.netflix.com",
@@ -26,7 +28,7 @@ const Home = () => {
   const [heroMovie, setHeroMovie] = useState([]);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [modalMovie, setModalMovie] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [watchlist, setWatchlist] = useState(() => {
     return JSON.parse(localStorage.getItem("watchlist")) || [];
   });
@@ -42,6 +44,68 @@ const Home = () => {
       alert("Already in watchlist!");
     }
   };
+
+  
+  useEffect(() => {
+    const fetchAllData = async () => {
+      const startTime = Date.now();
+
+      try {
+        const [moviesRes, topRatedRes, genresRes] = await Promise.all([
+          getMovies(),
+          getTopRatedMovies(),
+          getGenreMovies(),
+        ]);
+
+        setTopRatedMovies(topRatedRes.data);
+        setGenreMovies(genresRes.data);
+
+        const allowedTitles = ["Fast & Furious X", "Interstellar", "Jumbo"];
+        const filteredHero = moviesRes.data.filter((m) => allowedTitles.includes(m.title));
+        setHeroMovie(filteredHero);
+
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(1200 - elapsed, 0); // minimal 1.2 detik loading
+        setTimeout(() => setIsLoading(false), delay);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+  useEffect(() => {
+    const fetchAllData = async () => {
+      const startTime = Date.now();
+
+      try {
+        const [moviesRes, topRatedRes, genresRes] = await Promise.all([
+          getMovies(),
+          getTopRatedMovies(),
+          getGenreMovies(),
+        ]);
+
+        setTopRatedMovies(topRatedRes.data);
+        setGenreMovies(genresRes.data);
+
+        const allowedTitles = ["Fast & Furious X", "Interstellar", "Jumbo"];
+        const filteredHero = moviesRes.data.filter((m) => allowedTitles.includes(m.title));
+        setHeroMovie(filteredHero);
+
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(10000 - elapsed, 0); // minimal 1.2 detik loading
+        setTimeout(() => setIsLoading(false), delay);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+  
+  
 
   useEffect(() => {
     const allowedTitles = ["Fast & Furious X", "Interstellar", "Jumbo"];
@@ -81,8 +145,12 @@ const Home = () => {
   const movie = heroMovie[currentHeroIndex];
 
   const isInWatchlist = (id) => watchlist.some((item) => item.id === id);
+  
+  // ✅ LOADING SCREEN FIRST
+  if (isLoading) return <LoadingScreen />;
 
   return (
+    
     <div className="bg-[#111] text-white">
 
       {/* Hero section */}

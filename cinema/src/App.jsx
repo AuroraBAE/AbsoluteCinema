@@ -8,7 +8,6 @@ import MovieDetail from "./pages/MovieDetail";
 import Watchlist from "./pages/Watchlist";
 import Footer from "./components/Footer";
 import Trending from "./pages/Trending";
-
 import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
