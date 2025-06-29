@@ -6,21 +6,8 @@ import { getMovies, getTopRatedMovies, getGenreMovies } from "../backend/movie";
 import { renderSlider } from "../components/slider";
 import WatchlistModal from "../components/Watchlistmodal";
 import LoadingScreen from "../components/LoadingScreen";
-
-
-const platformLinks = {
-  "Netflix": "https://www.netflix.com",
-  "Disney+": "https://www.disneyplus.com",
-  "Amazon Prime": "https://www.primevideo.com",
-  "Amazon": "https://www.amazon.com",
-  "Apple TV": "https://tv.apple.com",
-  "HBO Max": "https://www.hbomax.com",
-  "Vidio": "https://www.vidio.com",
-  "XXI": "https://www.cinema21.co.id",
-  "CGV": "https://www.cgv.id",
-};
-
-const getPlatformLink = (name) => platformLinks[name.trim()] || "#";
+import Platform from "../utils/Platform";
+import MovieCard from "../components/MovieCard";
 
 const Home = () => {
   const [topRatedMovies, setTopRatedMovies] = useState([]);
@@ -45,11 +32,11 @@ const Home = () => {
     }
   };
 
-  
+  const isInWatchlist = (id) => watchlist.some((item) => item.id === id);
+
   useEffect(() => {
     const fetchAllData = async () => {
       const startTime = Date.now();
-
       try {
         const [moviesRes, topRatedRes, genresRes] = await Promise.all([
           getMovies(),
@@ -65,7 +52,7 @@ const Home = () => {
         setHeroMovie(filteredHero);
 
         const elapsed = Date.now() - startTime;
-        const delay = Math.max(1200 - elapsed, 0); // minimal 1.2 detik loading
+        const delay = Math.max(1200 - elapsed, 0);
         setTimeout(() => setIsLoading(false), delay);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -74,65 +61,6 @@ const Home = () => {
     };
 
     fetchAllData();
-  }, []);
-  useEffect(() => {
-    const fetchAllData = async () => {
-      const startTime = Date.now();
-
-      try {
-        const [moviesRes, topRatedRes, genresRes] = await Promise.all([
-          getMovies(),
-          getTopRatedMovies(),
-          getGenreMovies(),
-        ]);
-
-        setTopRatedMovies(topRatedRes.data);
-        setGenreMovies(genresRes.data);
-
-        const allowedTitles = ["Fast & Furious X", "Interstellar", "Jumbo"];
-        const filteredHero = moviesRes.data.filter((m) => allowedTitles.includes(m.title));
-        setHeroMovie(filteredHero);
-
-        const elapsed = Date.now() - startTime;
-        const delay = Math.max(10000 - elapsed, 0); // minimal 1.2 detik loading
-        setTimeout(() => setIsLoading(false), delay);
-      } catch (error) {
-        console.error("Error loading data:", error);
-        setIsLoading(false);
-      }
-    };
-
-    fetchAllData();
-  }, []);
-  
-  
-
-  useEffect(() => {
-    const allowedTitles = ["Fast & Furious X", "Interstellar", "Jumbo"];
-    const fetchHeroMovie = async () => {
-      const { data, error } = await getMovies();
-      if (!error && data && data.length > 0) {
-        const filtered = data.filter((movie) => allowedTitles.includes(movie.title));
-        setHeroMovie(filtered);
-      }
-    };
-    fetchHeroMovie();
-  }, []);
-
-  useEffect(() => {
-    const fetchTopRatedMovies = async () => {
-      const { data, error } = await getTopRatedMovies();
-      if (!error) setTopRatedMovies(data);
-    };
-    fetchTopRatedMovies();
-  }, []);
-
-  useEffect(() => {
-    const fetchGenres = async () => {
-      const { data, error } = await getGenreMovies();
-      if (!error) setGenreMovies(data);
-    };
-    fetchGenres();
   }, []);
 
   useEffect(() => {
@@ -144,15 +72,10 @@ const Home = () => {
 
   const movie = heroMovie[currentHeroIndex];
 
-  const isInWatchlist = (id) => watchlist.some((item) => item.id === id);
-  
-  // ✅ LOADING SCREEN FIRST
   if (isLoading) return <LoadingScreen />;
 
   return (
-    
     <div className="bg-[#111] text-white">
-
       {/* Hero section */}
       {movie && (
         <div className="relative w-full h-screen text-white">
@@ -182,13 +105,7 @@ const Home = () => {
                   </button>
                 </Link>
               </div>
-              {movie.platform.split(",").map((p, i) => (
-                <a key={i} href={getPlatformLink(p.trim())} target="_blank" rel="noopener noreferrer" className="inline-block">
-                  <span className="bg-white bg-opacity-10 hover:bg-white hover:text-black px-3 py-1 rounded-full text-xs mr-2 border border-white transition duration-300 cursor-pointer">
-                    {p.trim()}
-                  </span>
-                </a>
-              ))}
+              <Platform platformString={movie.platform} />
             </div>
           </div>
         </div>
@@ -228,40 +145,16 @@ const Home = () => {
             <h2 className="text-3xl font-bold flex items-center gap-2 border-l-4 border-yellow-400 pl-4">Trending</h2>
             <a href="/trending" className="text-yellow-400 hover:underline font-semibold text-sm md:text-base">See More →</a>
           </div>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {topRatedMovies.slice(0, 6).map((movie) => {
-              const inList = isInWatchlist(movie.id);
-              return (
-                <div key={movie.id} className="relative group w-full bg-[#1a1a1a] rounded-lg shadow-md overflow-hidden flex flex-col transition duration-300 ease-in-out transform hover:scale-105 hover:-translate-y-2">
-                  <div className="relative h-72 overflow-hidden">
-                    <img src={movie.image} alt={movie.title} className="w-full h-full object-cover transition duration-300 group-hover:brightness-50" />
-                    <button
-                      onClick={() => !inList && addToWatchlist(movie)}
-                      className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    >
-                      <span className={`px-4 py-2 rounded-md text-sm font-semibold shadow-lg ${inList ? "bg-red-700 text-white" : "bg-red-600 text-white hover:bg-red-700"}`}>
-                        {inList ? "✔ In List" : "+ Add to List"}
-                      </span>
-                    </button>
-                    <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs font-semibold px-2 py-1 rounded">
-                      {movie.platform.split(',')[0]}
-                    </div>
-                  </div>
-                  <div className="p-3 flex flex-col justify-between flex-grow">
-                    <h3 className="text-base md:text-lg font-bold text-white line-clamp-1 mb-1">{movie.title}</h3>
-                    <div className="flex justify-between text-sm text-gray-300 mb-2">
-                      <span>{movie.year}</span>
-                      <span className="text-yellow-400">⭐ {movie.rating}</span>
-                    </div>
-                    <div className="flex gap-2 flex-wrap">
-                      {movie.genre && movie.genre.split(",").slice(0, 2).map((g, i) => (
-                        <span key={i} className="bg-gray-800 text-white text-xs px-2 py-1 rounded-full">{g.trim()}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {topRatedMovies.slice(0, 6).map((movie) => (
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                addToWatchlist={addToWatchlist}
+                isInWatchlist={isInWatchlist}
+              />
+            ))}
           </div>
         </div>
       </div>
