@@ -16,6 +16,7 @@ import Trending from "./pages/Trending";
 import ScrollToTop from "./components/ScrollToTop";
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
+import ProtectedRoute from "./middleware/ProtectedRoute";
 
 function App() {
   return (
@@ -27,9 +28,9 @@ function App() {
         <Route path="/genres" element={<GenreListPage />} />
         <Route path="/Trending" element={<Trending />} />
         <Route path="/movie/:id" element={<MovieDetail />} />
-        <Route path="/watchlist" element={<Watchlist />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/watchlist" element={<Watchlist />} />
       </Routes>
       <LocationChecker />
     </Router>

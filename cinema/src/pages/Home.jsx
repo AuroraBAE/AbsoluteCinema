@@ -8,6 +8,8 @@ import WatchlistModal from "../components/Watchlistmodal";
 import LoadingScreen from "../components/LoadingScreen";
 import Platform from "../utils/Platform";
 import MovieCard from "../components/MovieCard";
+import useAuth from "../hooks/useAuth";
+import Swal from "sweetalert2";
 
 const Home = () => {
   const [topRatedMovies, setTopRatedMovies] = useState([]);
@@ -19,8 +21,14 @@ const Home = () => {
   const [watchlist, setWatchlist] = useState(() => {
     return JSON.parse(localStorage.getItem("watchlist")) || [];
   });
+  const { session } = useAuth();
 
   const addToWatchlist = (movie) => {
+    if (!session) {
+      Swal.fire("Gagal", "Anda harus login terlebih dahulu", "error");
+      return;
+    }
+
     const isExist = watchlist.find((item) => item.id === movie.id);
     if (!isExist) {
       const updated = [...watchlist, movie];
@@ -28,7 +36,7 @@ const Home = () => {
       localStorage.setItem("watchlist", JSON.stringify(updated));
       setModalMovie(movie);
     } else {
-      alert("Already in watchlist!");
+      Swal.fire("Gagal", "Film sudah ada di watchlist!", "error");
     }
   };
 

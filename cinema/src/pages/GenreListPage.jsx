@@ -7,6 +7,7 @@ import MovieCard from "../components/MovieCard";
 import WatchlistModal from "../components/Watchlistmodal";
 import LoadingScreen from "../components/LoadingScreen";
 import Platform from "../utils/Platform";
+import useAuth from "../hooks/useAuth";
 
 const GenreListPage = () => {
   const [genreMovies, setGenreMovies] = useState([]);
@@ -17,9 +18,14 @@ const GenreListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [heroMovie, setHeroMovie] = useState(null);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+  const { session } = useAuth();
 
 
   const addToWatchlist = (movie) => {
+    if (!session) {
+      alert("Please login first!");
+      return;
+    }
     const isExist = watchlist.find((item) => item.id === movie.id);
     if (!isExist) {
       const updated = [...watchlist, movie];

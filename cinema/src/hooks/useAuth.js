@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import useUserStore from '../store/useUserStore';
 import { supabase } from '../libs/supabase';
+import Swal from 'sweetalert2';
 
 export default function useAuth() {
   const [session, setSession] = useState(null);
@@ -8,6 +9,8 @@ export default function useAuth() {
   const { setUser } = useUserStore();
 
   const BASE_URL = "/";
+
+  
 
   useEffect(() => {
     // Ambil sesi saat ini

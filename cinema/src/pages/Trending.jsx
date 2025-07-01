@@ -7,6 +7,7 @@ import MovieCard from "../components/MovieCard";
 import WatchlistModal from "../components/Watchlistmodal";
 import LoadingScreen from "../components/LoadingScreen";
 import Platform from "../utils/Platform";
+import useAuth from "../hooks/useAuth";
 
 const Trending = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -17,6 +18,7 @@ const Trending = () => {
   const [modalMovie, setModalMovie] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+  const { session } = useAuth();
 
   useEffect(() => {
     const fetchTrending = async () => {
@@ -55,6 +57,10 @@ const Trending = () => {
   }, [heroMovies]);
 
   const addToWatchlist = (movie) => {
+    if (!session) {
+      alert("Please login first!");
+      return;
+    }
     const isExist = watchlist.find((item) => item.id === movie.id);
     if (!isExist) {
       const updated = [...watchlist, movie];
