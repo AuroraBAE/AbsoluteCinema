@@ -34,7 +34,7 @@ export default function useAuth() {
         subscription.unsubscribe();
       }
     };
-  }, []);
+  }, [session]);
 
   const logout = async () => {
     await supabase.auth.signOut();

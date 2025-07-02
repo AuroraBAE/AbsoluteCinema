@@ -10,6 +10,7 @@ import Platform from "../utils/Platform";
 import MovieCard from "../components/MovieCard";
 import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
+import { supabase } from "../libs/supabase";
 
 const Home = () => {
   const [topRatedMovies, setTopRatedMovies] = useState([]);
@@ -18,12 +19,21 @@ const Home = () => {
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [modalMovie, setModalMovie] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [watchlist, setWatchlist] = useState(() => {
-    return JSON.parse(localStorage.getItem("watchlist")) || [];
-  });
+  const [watchlist, setWatchlist] = useState([]);
   const { session } = useAuth();
 
-  const addToWatchlist = (movie) => {
+  const fetchWatchlist = async () => {
+    if (!session) return;
+    const { data, error } = await supabase
+      .from("watchlist")
+      .select("movie_id, movie:movie_id(*)")
+      .eq("user_id", session.user.id);
+    if (!error) {
+      setWatchlist(data.map((w) => w.movie));
+    }
+  };
+
+  const addToWatchlist = async (movie) => {
     if (!session) {
       Swal.fire("Gagal", "Anda harus login terlebih dahulu", "error");
       return;
@@ -31,10 +41,14 @@ const Home = () => {
 
     const isExist = watchlist.find((item) => item.id === movie.id);
     if (!isExist) {
-      const updated = [...watchlist, movie];
-      setWatchlist(updated);
-      localStorage.setItem("watchlist", JSON.stringify(updated));
-      setModalMovie(movie);
+      const { error } = await supabase.from("watchlist").insert({
+        user_id: session.user.id,
+        movie_id: movie.id,
+      });
+      if (!error) {
+        setWatchlist([...watchlist, movie]);
+        setModalMovie(movie);
+      }
     } else {
       Swal.fire("Gagal", "Film sudah ada di watchlist!", "error");
     }
@@ -59,6 +73,8 @@ const Home = () => {
         const filteredHero = moviesRes.data.filter((m) => allowedTitles.includes(m.title));
         setHeroMovie(filteredHero);
 
+        if (session) fetchWatchlist();
+
         const elapsed = Date.now() - startTime;
         const delay = Math.max(1200 - elapsed, 0);
         setTimeout(() => setIsLoading(false), delay);
@@ -69,7 +85,7 @@ const Home = () => {
     };
 
     fetchAllData();
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     const interval = setInterval(() => {
