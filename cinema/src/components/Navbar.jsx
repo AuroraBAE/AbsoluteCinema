@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Logo from "../assets/Logo.png";
 import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
 import { supabase } from "../libs/supabase";
-import { FaUserCircle, FaSignInAlt, FaUserPlus, FaSignOutAlt } from "react-icons/fa";
-
+import {
+  FaUserCircle,
+  FaSignInAlt,
+  FaUserPlus,
+  FaSignOutAlt,
+} from "react-icons/fa";
 
 const Navbar = () => {
   const location = useLocation();
@@ -65,8 +68,13 @@ const Navbar = () => {
         {/* Logo + Menu */}
         <div className="flex items-center space-x-8">
           <Link to="/">
-            <img src={Logo} alt="Cinema Logo" className="h-10 w-auto" />
+            <img
+              src="/icons/Logo.png"
+              alt="Cinema Logo"
+              className="h-10 w-auto"
+            />
           </Link>
+
           <ul className="flex space-x-6 font-bold uppercase">
             <NavItem to="/" location={location}>
               Home
@@ -97,12 +105,12 @@ const Navbar = () => {
             <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-md z-50 overflow-hidden">
               {session ? (
                 <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-yellow-400 transition-colors duration-200 font-medium"
-              >
-                <FaSignOutAlt className="text-gray-700" />
-                Logout
-              </button>
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-yellow-400 transition-colors duration-200 font-medium"
+                >
+                  <FaSignOutAlt className="text-gray-700" />
+                  Logout
+                </button>
               ) : (
                 <>
                   <Link
