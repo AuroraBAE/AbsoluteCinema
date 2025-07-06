@@ -1,18 +1,23 @@
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { supabase } from '../libs/supabase';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "../libs/supabase";
+import MovieCard from "../components/MovieCard";
+import useAuth from "../hooks/useAuth";
+import Swal from "sweetalert2";
 
 function Genre() {
   const { genreName } = useParams();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [watchlist, setWatchlist] = useState([]);
+  const { session } = useAuth();
 
   useEffect(() => {
     async function fetchMovies() {
       const { data, error } = await supabase
-        .from('movie')
-        .select('*')
-        .ilike('genre', `%${genreName}%`);
+        .from("movie")
+        .select("*")
+        .ilike("genre", `%${genreName}%`);
 
       if (!error) {
         setMovies(data);
@@ -25,9 +30,56 @@ function Genre() {
     fetchMovies();
   }, [genreName]);
 
+  useEffect(() => {
+    async function fetchWatchlist() {
+      if (!session) return;
+      const { data, error } = await supabase
+        .from("watchlist")
+        .select("movie_id, movie:movie_id(*)")
+        .eq("user_id", session.user.id);
+
+      if (!error) {
+        setWatchlist(data.map((w) => w.movie));
+      } else {
+        console.error("Error fetching watchlist:", error);
+      }
+    }
+
+    fetchWatchlist();
+  }, [session]);
+
+  const addToWatchlist = async (movie) => {
+    if (!session) {
+      Swal.fire("Gagal", "Anda harus login terlebih dahulu", "error");
+      return;
+    }
+
+    const isExist = watchlist.find((item) => item.id === movie.id);
+    if (isExist) {
+      Swal.fire("Gagal", "Film sudah ada di watchlist!", "error");
+      return;
+    }
+
+    const { error } = await supabase.from("watchlist").insert({
+      user_id: session.user.id,
+      movie_id: movie.id,
+    });
+
+    if (!error) {
+      setWatchlist([...watchlist, movie]);
+      Swal.fire("Berhasil", "Film ditambahkan ke watchlist", "success");
+    } else {
+      Swal.fire("Error", "Gagal menambahkan ke watchlist", "error");
+    }
+  };
+
+  const isInWatchlist = (id) => watchlist.some((item) => item.id === id);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold capitalize mb-6">Genre: {genreName}</h1>
+    <div className="max-w-7xl mx-auto px-4 py-8 pt-28 pb-10 text-white">
+      <h2 className="text-3xl md:text-4xl font-bold mb-6 border-l-4 border-yellow-400 pl-4 capitalize">
+        Genre: <span className="text-yellow-400">{genreName}</span>
+      </h2>
 
       {loading ? (
         <p className="text-gray-400">Loading...</p>
@@ -36,18 +88,12 @@ function Genre() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {movies.map((movie) => (
-            <div key={movie.id} className="bg-[#1a1a1a] rounded-xl overflow-hidden shadow-md hover:bg-[#2a2a2a] transition duration-300">
-              <img
-                src={movie.image}
-                alt={movie.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h2 className="text-white font-semibold text-lg">{movie.title}</h2>
-                <p className="text-gray-400 text-sm">Tahun: {movie.year}</p>
-                <p className="text-yellow-400 text-sm">Rating: {movie.rating}</p>
-              </div>
-            </div>
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              addToWatchlist={addToWatchlist}
+              isInWatchlist={isInWatchlist}
+            />
           ))}
         </div>
       )}

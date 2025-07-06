@@ -8,7 +8,7 @@ import WatchlistModal from "../components/Watchlistmodal";
 import LoadingScreen from "../components/LoadingScreen";
 import Platform from "../utils/Platform";
 import useAuth from "../hooks/useAuth";
-import {supabase} from "../libs/supabase";
+import { supabase } from "../libs/supabase";
 import Swal from "sweetalert2";
 
 const GenreListPage = () => {
@@ -78,7 +78,7 @@ const GenreListPage = () => {
       }
     };
     fetchAllData();
-  }, [fetchWatchlist]);
+  }, [session]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -139,7 +139,15 @@ const GenreListPage = () => {
 
         {genreMovies.map((genre) => (
           <div key={genre.name} className="mb-14">
-            <h3 className="text-2xl font-bold mb-4">{genre.displayText}</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-bold capitalize">{genre.displayText}</h3>
+              <Link
+                to={`/genres/${encodeURIComponent(genre.name)}`}
+                className="text-yellow-400 hover:underline text-sm font-semibold"
+              >
+                See More →
+              </Link>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
               {(genre.movies ?? []).slice(0, 5).map((movie) => (
                 <MovieCard

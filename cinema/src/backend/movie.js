@@ -12,12 +12,18 @@ export async function getMovies() {
 // topRatedMovies
 export async function getTopRatedMovies() {
   try {
-    let { data, error } = await supabase.from("movie").select("*").order("rating", { ascending: false });
+    let { data, error } = await supabase
+      .from("movie")
+      .select("*")
+      .gte("rating", 3.5) 
+      .order("rating", { ascending: false });
+      
     return { data, error };
   } catch (error) {
     return { error };
   }
 }
+
 
 
 // genreMovies
@@ -42,7 +48,7 @@ export async function getGenreMovies() {
           name: genre,
           displayText: getGenreDisplayText(genre),
           image: `/images/genre/${genre.toLowerCase().replace(/\s+/g, '-')}.jpg`,
-          movies: data || [], // tambahkan daftar film untuk genre ini
+          movies: data || [],
         };
       })
     );
@@ -58,11 +64,11 @@ export async function getGenreMovies() {
 // Helper function to get display text for each genre
 function getGenreDisplayText(genre) {
   const displayText = {
-    'Action': 'Aksi & Petualangan',
-    'Adventure': 'Petualangan',
-    'Comedy': 'Komedi',
+    'Action': 'Action',
+    'Adventure': 'Adventure',
+    'Comedy': 'Comedy',
     'Drama': 'Drama',
-    'Horror': 'Horor'
+    'Horror': 'Horror'
   };
   return displayText[genre] || genre;
 }

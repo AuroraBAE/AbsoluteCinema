@@ -30,17 +30,20 @@ const MovieDetail = () => {
     fetchMovie();
   }, [id]);
 
-  // Ambil rekomendasi film lainnya (selain film saat ini)
   useEffect(() => {
     const fetchRecommendations = async () => {
       if (!movie?.genre) return;
   
+      // Ambil genre pertama sebagai keyword pencarian
+      const genreKeyword = movie.genre.split(",")[0]?.trim();
+      if (!genreKeyword) return;
+  
       const { data, error } = await supabase
         .from("movie")
         .select("*")
-        .eq("genre", movie.genre)  // Filter berdasarkan genre yang sama
-        .neq("id", id)             // Kecualikan film yang sedang ditampilkan
-        .limit(4);                 // Batasi 4 film
+        .ilike("genre", `%${genreKeyword}%`) // genre yang mengandung keyword
+        .neq("id", id)                        // kecualikan film yang sedang ditonton
+        .limit(10);                          // ambil max 10 film
   
       if (error) {
         console.error("Error fetching recommendations:", error);
@@ -50,7 +53,8 @@ const MovieDetail = () => {
     };
   
     fetchRecommendations();
-  }, [movie, id]); // Trigger ulang saat movie berubah
+  }, [movie, id]);
+  
   
 
   if (loading) {
