@@ -56,7 +56,7 @@ const WatchlistModal = ({ movie, onClose }) => {
 
             <div className="flex justify-between mt-3">
               <button
-                onClick={() => (window.location.href = "/Watchlist")}
+                onClick={() => (window.location.href = "/watchlist")}
                 className="flex-1 mr-2 bg-gray-800 hover:bg-gray-700 text-white text-sm py-2 rounded-md"
               >
                 View Watchlist
