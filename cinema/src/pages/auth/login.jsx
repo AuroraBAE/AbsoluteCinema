@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Hourglass, Loader2 } from "lucide-react";
+import { Film } from "lucide-react";
 import googleIcon from "../../assets/google.svg";
 import AuthLayout from "./authLayout";
 import { useState } from "react";
@@ -43,7 +43,7 @@ export default function Login() {
         email,
         password,
       });
-      console.log(data)
+      console.log(data);
       if (error) {
         Swal.fire("Gagal", error.message, "error");
       } else {
@@ -52,7 +52,7 @@ export default function Login() {
         });
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       Swal.fire("Error", "Terjadi kesalahan server", "error");
     } finally {
       setLoading(false);
@@ -63,12 +63,12 @@ export default function Login() {
     <AuthLayout>
       <section className="p-8 flex flex-col justify-center items-center relative bg-white">
         {/* Mobile Header */}
-        <div className="flex items-center gap-x-1 font-semibold text-slate-700 absolute left-7 top-6 text-sm md:hidden">
-          <Hourglass size={18} />
+        <div className="flex items-center gap-x-1 font-semibold text-slate-700 absolute left-7 top-6 text-sm md:hidden z-10">
+          <Film size={18} />
           <h3>Absolute Cinema</h3>
         </div>
 
-        <form className="max-w-md w-full space-y-4" onSubmit={handleLogin}>
+        <form className="max-w-md w-full space-y-4 pt-16" onSubmit={handleLogin}>
           <div>
             <h3 className="text-2xl font-bold">Login</h3>
             <p className="text-slate-400 text-sm">
@@ -89,7 +89,9 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email}</p>
+            )}
           </div>
 
           {/* Password Field */}
@@ -105,7 +107,9 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password}</p>
+            )}
           </div>
 
           {/* Login Button */}
@@ -130,7 +134,9 @@ export default function Login() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              <span className="bg-white px-2 text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
