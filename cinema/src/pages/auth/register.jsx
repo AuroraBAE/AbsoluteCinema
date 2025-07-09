@@ -13,7 +13,6 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { handleLoginWithGoogle } = useAuth();
-  
 
   const [errors, setErrors] = useState({ email: "", password: "" });
 
@@ -44,7 +43,10 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const { data: _user, error } = await supabase.auth.signUp({ email, password });
+      const { data: _user, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
       if (error) {
         Swal.fire("Gagal", error.message, "error");
@@ -56,7 +58,7 @@ export default function Register() {
         }).then(() => navigate("/login"));
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       Swal.fire("Error", "Terjadi kesalahan server", "error");
     } finally {
       setLoading(false);
@@ -69,7 +71,7 @@ export default function Register() {
         {/* Mobile Header */}
         <div className="flex items-center gap-x-1 font-semibold text-slate-700 absolute left-7 top-6 text-sm md:hidden">
           <Hourglass size={18} />
-          <h3>Pomotimer</h3>
+          <h3>Absolute Cinema</h3>
         </div>
 
         <div className="max-w-md w-full">
@@ -83,7 +85,9 @@ export default function Register() {
 
             {/* Email Field */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="text-sm font-medium">Email</label>
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
+              </label>
               <input
                 id="email"
                 type="email"
@@ -92,12 +96,16 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
             </div>
 
             {/* Password Field */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="password" className="text-sm font-medium">Password</label>
+              <label htmlFor="password" className="text-sm font-medium">
+                Password
+              </label>
               <input
                 id="password"
                 type="password"
@@ -106,7 +114,9 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
             </div>
 
             {/* Signup Button */}
@@ -133,7 +143,8 @@ export default function Register() {
             {/* Google Button */}
             <button
               type="button"
-              className="flex items-center justify-center w-full border px-4 py-2 rounded mt-4"
+              onClick={handleLoginWithGoogle}
+              className="flex items-center justify-center w-full border px-4 py-2 rounded"
             >
               <img src={googleIcon} alt="Google" className="w-6 mr-2" />
               Google
