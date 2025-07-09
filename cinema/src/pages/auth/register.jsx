@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Hourglass } from "lucide-react";
+import { Film } from "lucide-react";
 import googleIcon from "../../assets/google.svg";
 import AuthLayout from "./authLayout";
 import { useState } from "react";
@@ -69,8 +69,8 @@ export default function Register() {
     <AuthLayout>
       <section className="p-8 flex flex-col justify-center items-center relative bg-white">
         {/* Mobile Header */}
-        <div className="flex items-center gap-x-1 font-semibold text-slate-700 absolute left-7 top-6 text-sm md:hidden">
-          <Hourglass size={18} />
+        <div className="flex items-center gap-x-1 font-semibold text-slate-700 text-sm md:hidden mb-4">
+          <Film size={18} />
           <h3>Absolute Cinema</h3>
         </div>
 
