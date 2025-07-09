@@ -65,7 +65,7 @@ export default function Login() {
         {/* Mobile Header */}
         <div className="flex items-center gap-x-1 font-semibold text-slate-700 absolute left-7 top-6 text-sm md:hidden">
           <Hourglass size={18} />
-          <h3>Pomotimer</h3>
+          <h3>Absolute Cinema</h3>
         </div>
 
         <form className="max-w-md w-full space-y-4" onSubmit={handleLogin}>
